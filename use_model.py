@@ -1,3 +1,5 @@
+#데이터 출처: https://www.kaggle.com/puneet6060/intel-image-classification
+
 import os
 
 # 0. 사용할 패키지 불러오기
