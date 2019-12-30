@@ -25,6 +25,7 @@ from keras.layers import Flatten
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
 from datetime import datetime
+import pickle
 
 start_time = datetime.now()
 # 0. 랜덤시드 고정시키기
@@ -43,6 +44,14 @@ train_datagen = ImageDataGenerator(rescale=1./255,
 train_generator = train_datagen.flow_from_directory('seg_train/seg_train', target_size=(150,150), batch_size=3, class_mode = 'categorical')
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory('seg_test/seg_test', target_size=(150,150), batch_size=3, class_mode = 'categorical')
+
+test_dic = test_generator.class_indices
+new_dic = {}
+for key, value in test_dic.items():
+    new_dic[value] = key
+
+with open ("fileName","wb") as file:
+    pickle.dump(new_dic,file)
 
 # 2. 모델 구성하기
 model = Sequential()

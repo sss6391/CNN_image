@@ -1,3 +1,3 @@
 import os
 
-print( os.listdir("pre") )
+print( os.listdir("./") )
