@@ -14,7 +14,7 @@ for file in file_list:
         model = load_model(file)
         break
 
-with open("fileName","rb") as file:
+with open("model_class","rb") as file:
     content = pickle.load(file)
     print(content)
 
