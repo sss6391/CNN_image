@@ -1,3 +1,4 @@
+
 # 데이터 출처: https://www.kaggle.com/puneet6060/intel-image-classification
 # 데이터 개요: 14034 개의 이미지 파일
 # 데이터 예측 모델: 6 종 분류
@@ -34,7 +35,7 @@ np.random.seed(3)
 # 1. 데이터셋 불러오기
 
 # 증폭 모델 생성
-'''
+
 train_datagen = ImageDataGenerator(rescale=1./255,
                                    rotation_range=20,
                                    width_shift_range=0.2,
@@ -44,9 +45,8 @@ train_datagen = ImageDataGenerator(rescale=1./255,
                                    horizontal_flip=True,
                                    # vertical_flip=True,
                                    fill_mode='nearest')
-'''
 
-train_datagen = ImageDataGenerator(rescale=1./255)
+# train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory('seg_train/seg_train', target_size=(150,150), batch_size=3, class_mode = 'categorical')
 test_datagen = ImageDataGenerator(rescale=1./255)
 test_generator = test_datagen.flow_from_directory('seg_test/seg_test', target_size=(150,150), batch_size=3, class_mode = 'categorical')
@@ -71,8 +71,8 @@ model.add(Dense(6, activation='softmax'))
 # 3. 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-step_epoch = 10
-epoch = 30
+step_epoch = 100
+epoch = 300
 hist = model.fit_generator(train_generator, steps_per_epoch=step_epoch, epochs=epoch
                            , validation_data=test_generator, validation_steps=5)
 
@@ -106,7 +106,6 @@ loss_ax.legend(loc='upper left')
 acc_ax.legend(loc='lower left')
 
 plt.show()
-
 
 file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(step_epoch)+"epoch"+str(epoch)+".h5"
 
