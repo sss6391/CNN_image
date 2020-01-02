@@ -35,7 +35,6 @@ np.random.seed(3)
 # 1. 데이터셋 불러오기
 
 # 증폭 모델 생성
-
 train_datagen = ImageDataGenerator(rescale=1./255,
                                    rotation_range=20,
                                    width_shift_range=0.2,

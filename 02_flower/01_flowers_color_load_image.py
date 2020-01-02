@@ -5,10 +5,14 @@ import matplotlib.pyplot as plt
 import keras
 
 df = pd.read_csv('flower_labels.csv')
-df.label.unique()
+print(df.label.unique())
 
-filenames = df.values[:, :-1]
-filenames = filenames.reshape(-1)
+# 라벨 길이(분류 갯수) 0 ~ 9
+df.label.unique().argmax() + 1
+
+# filenames = df.values[:, :-1]
+# filenames = filenames.reshape(-1)
+filenames = df["file"] # 위 두 코드를 한줄로 표현가능
 y_datas = df.values[:, -1:]
 
 # image = cv2.imread('flower_images/' + filenames[0])
