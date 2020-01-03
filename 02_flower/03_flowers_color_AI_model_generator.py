@@ -9,6 +9,7 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
 from datetime import datetime
 import matplotlib.pyplot as plt
+from keras.preprocessing.image import ImageDataGenerator
 
 start_time = datetime.now()
 df = pd.read_csv('flower_labels.csv')
@@ -47,13 +48,30 @@ y_tests = y_datas[-10:]
 
 num_classes = df.label.unique().argmax() + 1
 
+# datagen.fit(X_trains)
+# X_tests_gen = train_datagen.fit(X_tests)
+
 Y_trains = keras.utils.to_categorical(y_trains, num_classes)
 Y_tests = keras.utils.to_categorical(y_tests, num_classes)
+
 
 print('X_trains : ', X_trains.shape)
 print('X_tests : ', X_tests.shape)
 print('Y_trains : ', Y_trains.shape)
 print('Y_tests : ', Y_tests.shape)
+
+# 이미지 증폭
+datagen = ImageDataGenerator(rescale=1./255,
+                                   rotation_range=20,
+                                   width_shift_range=0.2,
+                                   height_shift_range=0.2,
+                                   shear_range=0.7,
+                                   zoom_range=[0.9, 2.2],
+                                   horizontal_flip=True,
+                                   # vertical_flip=True,
+                                   fill_mode='nearest')
+# generator 입력 데이터 생성
+test_gen = datagen.flow(X_tests, Y_tests)
 
 # 모델 구성하기
 model = Sequential()
@@ -67,17 +85,19 @@ model.add(Dense(num_classes, activation='softmax'))
 # 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+# 모델 학습
 # step_epoch = 100
-epoch = 20
-hist = model.fit(X_trains,Y_trains, epochs=epoch,batch_size=32
-                 , validation_data=(X_tests,Y_tests))
+epoch = 200
+hist = model.fit_generator(datagen.flow(X_trains, Y_trains, batch_size=8),
+                           steps_per_epoch=100, epochs=epoch)
 
 # 모델 평가하기
 print("-- Evaluate --")
-scores = model.evaluate(X_tests, Y_tests)
+scores = model.evaluate_generator(test_gen , steps=10)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 
-print(hist.history)
+end_time = datetime.now()
+print(f"\n 소요 시간: {end_time-start_time}")
 
 # 모델 학습 과정 표시하기
 fig, loss_ax = plt.subplots()
@@ -100,8 +120,6 @@ acc_ax.legend(loc='lower left')
 
 plt.show()
 
-file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(epoch)+".h5"
-
-end_time = datetime.now()
-print(f"\n 소요 시간: {end_time-start_time}")
+# 모델 저장
+file_name = "acc{0:0.2f}_step".format(scores[1]*100) + str(epoch)+ "_gen"+".h5"
 model.save(file_name)

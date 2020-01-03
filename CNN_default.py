@@ -25,6 +25,7 @@ from keras.layers import Flatten
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 start_time = datetime.now()
 # 0. 랜덤시드 고정시키기
@@ -45,7 +46,7 @@ model.add(Dense(6, activation='softmax'))
 # 3. 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 # 4. 모델 학습시키기
-model.fit_generator(train_generator, steps_per_epoch=15, epochs=200, validation_data = test_generator, validation_steps=5)
+hist = model.fit_generator(train_generator, steps_per_epoch=15, epochs=200, validation_data = test_generator, validation_steps=5)
 # 5. 모델 평가하기
 print("-- Evaluate --")
 scores = model.evaluate_generator(test_generator, steps=5)
