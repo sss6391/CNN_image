@@ -42,5 +42,4 @@ for file in pre_list:
     result = model.predict(test_img_reshaped)
     print(file, 'is', content[argmax(result)])
 
-# input("Press any keys to EXIT")
 # {'buildings': 0, 'forest': 1, 'glacier': 2, 'mountain': 3, 'sea': 4, 'street': 5}

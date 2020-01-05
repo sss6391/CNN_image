@@ -11,17 +11,17 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 start_time = datetime.now()
+
+# 라벨 불러오기
 df = pd.read_csv('flower_labels.csv')
 print(df.label.unique())
-
-# 라벨 길이(분류 갯수) 0 ~ 9
-df.label.unique().argmax() + 1
 
 # filenames = df.values[:, :-1]
 # filenames = filenames.reshape(-1)
 filenames = df["file"] # 위 두 코드를 한줄로 표현가능
 y_datas = df.values[:, -1:]
 
+# 불러올 이미지 확인
 # image = cv2.imread('flower_images/' + filenames[0])
 # cv2.imshow('image', image)
 # cv2.waitKey(0)
@@ -30,21 +30,24 @@ y_datas = df.values[:, -1:]
 # plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 # plt.axis('off')
 
+# 이미지 불러오기
 flower_images = []
 
 for filename in filenames:
     image = cv2.imread('flower_images/' + filename)
     flower_images.append(image)
-
 X_flowers = np.array(flower_images, dtype=np.float32)
 print('shape', X_flowers.shape)
 
+# 이미지 분류
 X_trains = X_flowers[:-10]
 X_tests = X_flowers[-10:]
 
+# 라벨 분류
 y_trains = y_datas[:-10]
 y_tests = y_datas[-10:]
 
+# 라벨 길이(분류 갯수) 0 ~ 9
 num_classes = df.label.unique().argmax() + 1
 
 Y_trains = keras.utils.to_categorical(y_trains, num_classes)
@@ -77,7 +80,11 @@ print("-- Evaluate --")
 scores = model.evaluate(X_tests, Y_tests)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 
-print(hist.history)
+# print(hist.history)
+
+# 소요시간 표시
+end_time = datetime.now()
+print(f"\n 소요 시간: {end_time-start_time}")
 
 # 모델 학습 과정 표시하기
 fig, loss_ax = plt.subplots()
@@ -100,8 +107,7 @@ acc_ax.legend(loc='lower left')
 
 plt.show()
 
-file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(epoch)+".h5"
 
-end_time = datetime.now()
-print(f"\n 소요 시간: {end_time-start_time}")
+# 모델 데이터 저장
+file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(epoch)+".h5"
 model.save(file_name)

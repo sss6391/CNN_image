@@ -32,9 +32,11 @@ for filename in filenames:
 X_flowers = np.array(flower_images, dtype=np.float32)
 print('shape', X_flowers.shape)
 
+# 이미지 분류
 X_trains = X_flowers[:-10]
 X_tests = X_flowers[-10:]
 
+# 라벨 분류
 y_trains = y_datas[:-10]
 y_tests = y_datas[-10:]
 
