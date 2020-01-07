@@ -71,7 +71,7 @@ model.add(Dense(num_classes, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # step_epoch = 100
-epoch = 20
+epoch = 100
 hist = model.fit(X_trains,Y_trains, epochs=epoch,batch_size=32
                  , validation_data=(X_tests,Y_tests))
 
@@ -91,11 +91,11 @@ fig, loss_ax = plt.subplots()
 
 acc_ax = loss_ax.twinx()
 loss_ax.plot(hist.history['loss'], 'y', label='train loss')
-# loss_ax.plot(hist.history['val_loss'], 'r', label='val loss')
+loss_ax.plot(hist.history['val_loss'], 'r', label='val loss')
 # loss_ax.set_ylim([0.0, 0.5])
 
 acc_ax.plot(hist.history['accuracy'], 'b', label='train acc')
-# acc_ax.plot(hist.history['val_accuracy'],'g', label='val acc')
+acc_ax.plot(hist.history['val_accuracy'],'g', label='val acc')
 # acc_ax.set_ylim([0.8, 1.0])
 
 loss_ax.set_xlabel('epoch')
@@ -111,3 +111,5 @@ plt.show()
 # 모델 데이터 저장
 file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(epoch)+".h5"
 model.save(file_name)
+
+"accuracy: 30.00%"

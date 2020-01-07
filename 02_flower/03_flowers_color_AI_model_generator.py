@@ -69,8 +69,6 @@ datagen = ImageDataGenerator(rescale=1./255,
                                    horizontal_flip=True,
                                    # vertical_flip=True,
                                    fill_mode='nearest')
-# generator 입력 데이터 생성
-test_gen = datagen.flow(X_tests, Y_tests)
 
 # 모델 구성하기
 model = Sequential()
@@ -86,10 +84,11 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 
 # 모델 학습
 # step_epoch = 100
-epoch = 200
+epoch = 2
 hist = model.fit_generator(datagen.flow(X_trains, Y_trains, batch_size=8),
-                           steps_per_epoch=100, epochs=epoch)
-
+                           steps_per_epoch=10, epochs=epoch)
+# generator 입력 데이터 생성
+test_gen = datagen.flow(X_tests, Y_tests)
 # 모델 평가하기
 print("-- Evaluate --")
 scores = model.evaluate_generator(test_gen , steps=10)
