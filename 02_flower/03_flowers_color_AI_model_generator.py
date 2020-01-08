@@ -83,10 +83,13 @@ model.add(Dense(num_classes, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # 모델 학습
-# step_epoch = 100
-epoch = 2
-hist = model.fit_generator(datagen.flow(X_trains, Y_trains, batch_size=8),
-                           steps_per_epoch=10, epochs=epoch)
+step_epoch = 100
+epoch = 20
+dategen_f = datagen.flow(X_trains, Y_trains, batch_size=8)
+hist = model.fit_generator(dategen_f, steps_per_epoch=step_epoch, epochs=epoch)
+
+# hist = model.fit_generator(datagen.flow(X_trains, Y_trains, batch_size=8), epochs=epoch)
+
 # generator 입력 데이터 생성
 test_gen = datagen.flow(X_tests, Y_tests)
 # 모델 평가하기

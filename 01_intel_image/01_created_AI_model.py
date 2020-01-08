@@ -69,13 +69,13 @@ model.add(Dense(6, activation='softmax'))
 # 3. 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-step_epoch = 100
+# step_epoch = 100
 epoch = 300
-hist = model.fit_generator(train_generator, steps_per_epoch=step_epoch, epochs=epoch
-                           , validation_data=test_generator, validation_steps=5)
-
-# hist = model.fit_generator(train_generator, epochs=epoch
+# hist = model.fit_generator(train_generator, steps_per_epoch=step_epoch, epochs=epoch
 #                            , validation_data=test_generator, validation_steps=5)
+
+hist = model.fit_generator(train_generator, epochs=epoch
+                           , validation_data=test_generator, validation_steps=5)
 
 # 5. 모델 평가하기
 print("-- Evaluate --")
