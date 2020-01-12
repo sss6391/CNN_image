@@ -62,14 +62,14 @@ print('Y_trains : ', Y_trains.shape)
 print('Y_tests : ', Y_tests.shape)
 
 # 이미지 증폭
-datagen = ImageDataGenerator(rescale=1./255,
-                                   rotation_range=20,
+datagen = ImageDataGenerator(      rotation_range=20,
                                    width_shift_range=0.2,
                                    height_shift_range=0.2,
                                    shear_range=0.7,
                                    zoom_range=[0.9, 2.2],
                                    horizontal_flip=True,
                                    # vertical_flip=True,
+                                   # rescale=1./255,
                                    fill_mode='nearest')
 
 # 모델 구성하기
@@ -84,20 +84,30 @@ model.add(Dense(num_classes, activation='softmax'))
 # 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+from keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(patience=10) # 조기종료 콜백함수 정의
+
 # 모델 학습
-step_epoch = 100
-epoch = 20
-dategen_f = datagen.flow(X_trains, Y_trains, batch_size=8)
-hist = model.fit_generator(dategen_f, steps_per_epoch=step_epoch, epochs=epoch)
-
-# hist = model.fit_generator(datagen.flow(X_trains, Y_trains, batch_size=8), epochs=epoch)
-
+step_epoch = 1300
+epoch = 100
 # generator 입력 데이터 생성
+dategen_f = datagen.flow(X_trains, Y_trains, batch_size=16)
 test_gen = datagen.flow(X_tests, Y_tests)
+hist = model.fit_generator(dategen_f, steps_per_epoch=step_epoch, epochs=epoch
+                            , validation_data=test_gen)
+                           # ,callbacks=[early_stopping])
+# hist = model.fit_generator(dategen_f, epochs=epoch, validation_data=test_gen)
+
 # 모델 평가하기
 print("-- Evaluate --")
+scores = model.evaluate_generator(test_gen)
+print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
+
+'''
+# 모델 평가하기
 scores = model.evaluate_generator(test_gen , steps=10)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
+'''
 
 end_time = datetime.now()
 print(f"\n 소요 시간: {end_time-start_time}")
@@ -107,11 +117,11 @@ fig, loss_ax = plt.subplots()
 
 acc_ax = loss_ax.twinx()
 loss_ax.plot(hist.history['loss'], 'y', label='train loss')
-# loss_ax.plot(hist.history['val_loss'], 'r', label='val loss')
+loss_ax.plot(hist.history['val_loss'], 'r', label='val loss')
 # loss_ax.set_ylim([0.0, 0.5])
 
 acc_ax.plot(hist.history['accuracy'], 'b', label='train acc')
-# acc_ax.plot(hist.history['val_accuracy'],'g', label='val acc')
+acc_ax.plot(hist.history['val_accuracy'],'g', label='val acc')
 # acc_ax.set_ylim([0.8, 1.0])
 
 loss_ax.set_xlabel('epoch')
@@ -124,5 +134,5 @@ acc_ax.legend(loc='lower left')
 plt.show()
 
 # 모델 저장
-file_name = "acc{0:0.2f}_step".format(scores[1]*100) + str(epoch)+ "_gen"+".h5"
+file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(step_epoch)+"epoch"+str(epoch)+".h5"
 model.save(file_name)

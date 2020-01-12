@@ -8,7 +8,7 @@ total = 0
 
 file_list = os.listdir("./")
 for file in file_list:
-    if "_gen.h5" in file:
+    if ".h5" in file:
         model = keras.models.load_model(file)
         print(file+" is loaded\n")
         break
@@ -37,15 +37,9 @@ num_classes = df.label.unique().argmax() + 1
 # 라벨 배열 생성
 Y_tests = keras.utils.to_categorical(y_datas, num_classes)
 
-ran = 100
-for idex in range(ran):
-    # 모델 평가
-    test_datagen = keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
-    test_gen = test_datagen.flow(X_flowers, Y_tests)
-    print("-- Evaluate --")
-    scores = model.evaluate_generator(test_gen, steps=5)
-    print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
-    total += float(scores[1] * 100)
-
-total_mean = total / ran
-print(total_mean)
+# 모델 평가
+test_datagen = keras.preprocessing.image.ImageDataGenerator(rescale=1./255)
+test_gen = test_datagen.flow(X_flowers, Y_tests)
+print("-- Evaluate --")
+scores = model.evaluate_generator(test_gen)
+print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))

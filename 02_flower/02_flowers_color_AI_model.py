@@ -72,16 +72,20 @@ model.add(Dense(num_classes, activation='softmax'))
 # 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
+result = 0
+
 # step_epoch = 100
-epoch = 100
-hist = model.fit(X_trains,Y_trains, epochs=epoch,batch_size=32
-                 , validation_data=(X_tests,Y_tests))
+epoch = 50
+hist = model.fit(X_trains,Y_trains, epochs=epoch ,batch_size=32
+                 ,validation_data=(X_tests,Y_tests))
 
-# 모델 평가하기
 print("-- Evaluate --")
-scores = model.evaluate(X_tests, Y_tests)
-print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
-
+for a in range(20):
+    # 모델 평가하기
+    scores = model.evaluate(X_tests, Y_tests)
+    print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
+    result += scores[1] * 100
+print("@@@@scores: "+str(result/20))
 # print(hist.history)
 
 # 소요시간 표시

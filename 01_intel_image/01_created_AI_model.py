@@ -45,9 +45,9 @@ train_datagen = ImageDataGenerator(rescale=1./255,
                                    fill_mode='nearest')
 
 # train_datagen = ImageDataGenerator(rescale=1./255)
-train_generator = train_datagen.flow_from_directory('seg_train/seg_train', target_size=(150,150), batch_size=3, class_mode = 'categorical')
+train_generator = train_datagen.flow_from_directory('seg_train/seg_train', target_size=(150,150), batch_size=16, class_mode = 'categorical')
 test_datagen = ImageDataGenerator(rescale=1./255)
-test_generator = test_datagen.flow_from_directory('seg_test/seg_test', target_size=(150,150), batch_size=3, class_mode = 'categorical')
+test_generator = test_datagen.flow_from_directory('seg_test/seg_test', target_size=(150,150), batch_size=16, class_mode = 'categorical')
 
 test_dic = test_generator.class_indices
 new_dic = {}
@@ -69,17 +69,23 @@ model.add(Dense(6, activation='softmax'))
 # 3. 모델 엮기
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# step_epoch = 100
-epoch = 300
+from keras.callbacks import EarlyStopping
+early_stopping = EarlyStopping(patience=5) # 조기종료 콜백함수 정의
+
+step_epoch = 400
+epoch = 100
 # hist = model.fit_generator(train_generator, steps_per_epoch=step_epoch, epochs=epoch
-#                            , validation_data=test_generator, validation_steps=5)
+#                            , validation_data=test_generator, validation_steps=5, callbacks=[early_stopping])
 
 hist = model.fit_generator(train_generator, epochs=epoch
-                           , validation_data=test_generator, validation_steps=5)
+                           , validation_data=test_generator)
+
+end_time = datetime.now()
+print(f"\n 소요 시간: {end_time-start_time}")
 
 # 5. 모델 평가하기
 print("-- Evaluate --")
-scores = model.evaluate_generator(test_generator, steps=5)
+scores = model.evaluate_generator(test_generator)
 print("%s: %.2f%%" %(model.metrics_names[1], scores[1]*100))
 
 print(hist.history)
@@ -88,11 +94,11 @@ print(hist.history)
 fig, loss_ax = plt.subplots()
 
 acc_ax = loss_ax.twinx()
-# loss_ax.plot(hist.history['loss'], 'y', label='train loss')
+loss_ax.plot(hist.history['loss'], 'y', label='train loss')
 loss_ax.plot(hist.history['val_loss'], 'r', label='val loss')
 # loss_ax.set_ylim([0.0, 0.5])
 
-# acc_ax.plot(hist.history['accuracy'], 'b', label='train acc')
+acc_ax.plot(hist.history['accuracy'], 'b', label='train acc')
 acc_ax.plot(hist.history['val_accuracy'],'g', label='val acc')
 # acc_ax.set_ylim([0.8, 1.0])
 
@@ -106,11 +112,8 @@ acc_ax.legend(loc='lower left')
 plt.show()
 
 file_name = "acc{0:0.2f}step".format(scores[1]*100) + str(step_epoch)+"epoch"+str(epoch)+".h5"
-
-end_time = datetime.now()
-print(f"\n 소요 시간: {end_time-start_time}")
 model.save(file_name)
-print(test_generator.class_indices)
+# print(test_generator.class_indices)
 
 # 7. 결과
 # -- Evaluate --
